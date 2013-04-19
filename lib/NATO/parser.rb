@@ -20,7 +20,7 @@ class NATO::Parser
         rescue MissingEntry
           char
         end
-      end.compact
+      end
     end
   end
 
