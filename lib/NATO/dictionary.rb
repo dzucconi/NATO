@@ -51,11 +51,12 @@ module NATO
   }
 
   def self.lookup(string, dictionary)
-    value = DICTIONARY[dictionary][string.to_sym]
+    char = string.downcase.to_sym
+    value = DICTIONARY[dictionary][char]
 
     # Attempt to locate in the alternate dictionary
     # 
-    value = DICTIONARY[(dictionary == :letters ? :digits : :letters)][string.to_sym] if value.nil?
+    value = DICTIONARY[(dictionary == :letters ? :digits : :letters)][char] if value.nil?
 
     raise MissingEntry if value.nil?
 
