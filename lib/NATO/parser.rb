@@ -1,20 +1,32 @@
 require 'singleton'
+require 'tokenizer'
 
 class NATO::Parser
   include Singleton
 
+  def assess(text)
+    tokens = Tokenizer::Tokenizer.new(:en).tokenize(text)
+
+    tokens.map do |token|
+      [ token, (contains_numeric?(token) ? :digits : :letters) ]
+    end
+  end
+
   def natify(text)
-    text.split('').map do |piece|
-      if is_numeric? piece
-        piece
-      else
-        NATO::DICTIONARY[piece.to_sym].to_s
-      end
-    end.join ' '
+    assess(text).map do |guess|
+      guess[0].chars.map do |char|
+        begin
+          NATO.lookup(char, guess[1])
+        rescue MissingEntry
+          char
+        end
+      end.compact
+    end
   end
 
 private
-  def is_numeric?(obj)
-    obj.to_s.match(/\A[+-]?\d+?(\.\d+)?\Z/)
+
+  def contains_numeric?(obj)
+    obj.to_s.match(/\d/)
   end
 end
